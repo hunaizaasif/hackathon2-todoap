@@ -54,8 +54,8 @@ Be friendly, concise, and helpful. When users ask to create tasks, extract the t
       const toolResults = [];
 
       for (const toolCall of assistantMessage.tool_calls) {
-        const toolName = toolCall.function.name;
-        const toolArgs = JSON.parse(toolCall.function.arguments);
+        const toolName = (toolCall as any).function.name;
+        const toolArgs = JSON.parse((toolCall as any).function.arguments);
 
         // Execute MCP tool with auth token
         const result = await executeMCPTool(toolName, toolArgs, authToken);
