@@ -5,7 +5,7 @@ import { useState } from "react";
 
 interface TaskCardProps {
   task: Task;
-  onUpdate: (id: number, updates: Partial<Task>) => Promise<void>;
+  onUpdate: (id: number, updates: Partial<Task>) => Promise<Task>;
   onDelete: (id: number) => Promise<void>;
 }
 

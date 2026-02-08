@@ -5,8 +5,8 @@ import { TaskCard } from "./TaskCard";
 
 interface TaskListProps {
   tasks: Task[];
-  onUpdate: (id: string, updates: Partial<Task>) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
+  onUpdate: (id: number, updates: Partial<Task>) => Promise<Task>;
+  onDelete: (id: number) => Promise<void>;
   isLoading?: boolean;
 }
 
