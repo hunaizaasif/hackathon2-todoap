@@ -1,0 +1,643 @@
+openapi: 3.0.3
+info:
+  title: Phase 2 (Todo Full-Stack Web Application) API
+  description: |
+    RESTful API for multi-user task management with authentication and persistence.
+
+    ## Features
+    - User registration and authentication
+    - CRUD operations for tasks
+    - User isolation (users can only access their own tasks)
+    - Data persistence with PostgreSQL
+
+    ## Authentication
+    Protected endpoints require authentication via session token in the Authorization header.
+  version: 1.0.0
+  contact:
+    name: Phase 2 (Todo Full-Stack Web Application) Development Team
+
+servers:
+  - url: http://localhost:8000
+    description: Development server
+  - url: https://api.example.com
+    description: Production server (TBD)
+
+tags:
+  - name: Authentication
+    description: User registration and login
+  - name: Tasks
+    description: Task CRUD operations
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user account
+      description: Creates a new user account with email and password
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+            examples:
+              example1:
+                summary: New user registration
+                value:
+                  email: alice@example.com
+                  password: SecurePass123!
+                  name: Alice Smith
+      responses:
+        '201':
+          description: User successfully registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              examples:
+                example1:
+                  summary: Successful registration
+                  value:
+                    id: 1
+                    email: alice@example.com
+                    name: Alice Smith
+                    created_at: "2026-02-05T10:00:00Z"
+        '400':
+          description: Validation error (invalid email, weak password, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                invalidEmail:
+                  summary: Invalid email format
+                  value:
+                    detail: "Invalid email format"
+                duplicateEmail:
+                  summary: Email already exists
+                  value:
+                    detail: "Email already registered"
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Authenticate user and create session
+      description: Validates credentials and returns authentication token/session
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+            examples:
+              example1:
+                summary: User login
+                value:
+                  email: alice@example.com
+                  password: SecurePass123!
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              examples:
+                example1:
+                  summary: Successful login
+                  value:
+                    access_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                    token_type: bearer
+                    user:
+                      id: 1
+                      email: alice@example.com
+                      name: Alice Smith
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                example1:
+                  summary: Invalid credentials
+                  value:
+                    detail: "Invalid email or password"
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Invalidate user session
+      description: Logs out the current user by invalidating their session
+      operationId: logoutUser
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Logout successful (no content)
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /tasks:
+    get:
+      tags:
+        - Tasks
+      summary: Get all tasks for the authenticated user
+      description: Returns a list of all tasks belonging to the authenticated user
+      operationId: getTasks
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          description: Filter tasks by status
+          required: false
+          schema:
+            type: string
+            enum: [pending, in_progress, complete]
+          example: pending
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskResponse'
+              examples:
+                example1:
+                  summary: User's tasks
+                  value:
+                    - id: 1
+                      user_id: 1
+                      title: Complete Phase 2 implementation
+                      description: Implement FastAPI endpoints
+                      status: in_progress
+                      created_at: "2026-02-05T10:30:00Z"
+                      updated_at: "2026-02-05T11:00:00Z"
+                    - id: 2
+                      user_id: 1
+                      title: Write documentation
+                      description: null
+                      status: pending
+                      created_at: "2026-02-05T10:35:00Z"
+                      updated_at: "2026-02-05T10:35:00Z"
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Tasks
+      summary: Create a new task
+      description: Creates a new task for the authenticated user
+      operationId: createTask
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+            examples:
+              example1:
+                summary: New task
+                value:
+                  title: Complete Phase 2 implementation
+                  description: Implement FastAPI endpoints with SQLModel
+                  status: pending
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+              examples:
+                example1:
+                  summary: Created task
+                  value:
+                    id: 1
+                    user_id: 1
+                    title: Complete Phase 2 implementation
+                    description: Implement FastAPI endpoints with SQLModel
+                    status: pending
+                    created_at: "2026-02-05T10:30:00Z"
+                    updated_at: "2026-02-05T10:30:00Z"
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                emptyTitle:
+                  summary: Empty title
+                  value:
+                    detail: "Title cannot be empty"
+                titleTooLong:
+                  summary: Title too long
+                  value:
+                    detail: "Title must not exceed 200 characters"
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /tasks/{task_id}:
+    get:
+      tags:
+        - Tasks
+      summary: Get a specific task by ID
+      description: Returns a single task if it belongs to the authenticated user
+      operationId: getTaskById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: task_id
+          in: path
+          description: Task ID
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+              examples:
+                example1:
+                  summary: Task details
+                  value:
+                    id: 1
+                    user_id: 1
+                    title: Complete Phase 2 implementation
+                    description: Implement FastAPI endpoints
+                    status: in_progress
+                    created_at: "2026-02-05T10:30:00Z"
+                    updated_at: "2026-02-05T11:00:00Z"
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Task not found or does not belong to user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                example1:
+                  summary: Task not found
+                  value:
+                    detail: "Task not found"
+
+    put:
+      tags:
+        - Tasks
+      summary: Update all fields of a task
+      description: Replaces all fields of an existing task (full update)
+      operationId: updateTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: task_id
+          in: path
+          description: Task ID
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+            examples:
+              example1:
+                summary: Update task
+                value:
+                  title: Complete Phase 2 implementation (updated)
+                  description: Implement FastAPI endpoints with SQLModel and tests
+                  status: in_progress
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+              examples:
+                example1:
+                  summary: Updated task
+                  value:
+                    id: 1
+                    user_id: 1
+                    title: Complete Phase 2 implementation (updated)
+                    description: Implement FastAPI endpoints with SQLModel and tests
+                    status: in_progress
+                    created_at: "2026-02-05T10:30:00Z"
+                    updated_at: "2026-02-05T11:30:00Z"
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Task not found or does not belong to user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      tags:
+        - Tasks
+      summary: Partially update a task
+      description: Updates only the specified fields of an existing task
+      operationId: patchTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: task_id
+          in: path
+          description: Task ID
+          required: true
+          schema:
+            type: integer
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskPatch'
+            examples:
+              statusOnly:
+                summary: Update status only
+                value:
+                  status: complete
+              titleAndDescription:
+                summary: Update title and description
+                value:
+                  title: New title
+                  description: New description
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Task not found or does not belong to user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Tasks
+      summary: Delete a task
+      description: Permanently removes a task (hard delete)
+      operationId: deleteTask
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: task_id
+          in: path
+          description: Task ID
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '204':
+          description: Task deleted successfully (no content)
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Task not found or does not belong to user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Session token obtained from /auth/login
+
+  schemas:
+    UserRegister:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 255
+          example: alice@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: SecurePass123!
+        name:
+          type: string
+          maxLength: 100
+          nullable: true
+          example: Alice Smith
+
+    UserLogin:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: alice@example.com
+        password:
+          type: string
+          format: password
+          example: SecurePass123!
+
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        email:
+          type: string
+          format: email
+          example: alice@example.com
+        name:
+          type: string
+          nullable: true
+          example: Alice Smith
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-02-05T10:00:00Z"
+
+    LoginResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        token_type:
+          type: string
+          example: bearer
+        user:
+          $ref: '#/components/schemas/UserResponse'
+
+    TaskCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: Complete Phase 2 implementation
+        description:
+          type: string
+          maxLength: 2000
+          nullable: true
+          example: Implement FastAPI endpoints with SQLModel
+        status:
+          type: string
+          enum: [pending, in_progress, complete]
+          default: pending
+          example: pending
+
+    TaskUpdate:
+      type: object
+      required:
+        - title
+        - status
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: Complete Phase 2 implementation
+        description:
+          type: string
+          maxLength: 2000
+          nullable: true
+          example: Implement FastAPI endpoints with SQLModel
+        status:
+          type: string
+          enum: [pending, in_progress, complete]
+          example: in_progress
+
+    TaskPatch:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 200
+          example: Complete Phase 2 implementation
+        description:
+          type: string
+          maxLength: 2000
+          nullable: true
+          example: Implement FastAPI endpoints with SQLModel
+        status:
+          type: string
+          enum: [pending, in_progress, complete]
+          example: complete
+
+    TaskResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Complete Phase 2 implementation
+        description:
+          type: string
+          nullable: true
+          example: Implement FastAPI endpoints with SQLModel
+        status:
+          type: string
+          enum: [pending, in_progress, complete]
+          example: in_progress
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-02-05T10:30:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-02-05T11:00:00Z"
+
+    ErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: Error message describing what went wrong

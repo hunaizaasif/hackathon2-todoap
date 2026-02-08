@@ -1,0 +1,494 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase 3 MCP Tools Contract",
+  "description": "MCP tool definitions for Phase 3 AI Agent task management",
+  "version": "1.0.0",
+  "tools": [
+    {
+      "name": "add_task",
+      "description": "Create a new task for the authenticated user. Use this when the user wants to create, add, or remember something as a task.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The task title. Should be concise and descriptive (e.g., 'Buy groceries', 'Call dentist').",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string",
+            "description": "Optional detailed description or notes about the task.",
+            "maxLength": 2000
+          }
+        },
+        "required": ["title"],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the task was created successfully"
+          },
+          "task": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "The unique identifier for the created task"
+              },
+              "title": {
+                "type": "string",
+                "description": "The task title"
+              },
+              "description": {
+                "type": "string",
+                "description": "The task description"
+              },
+              "completed": {
+                "type": "boolean",
+                "description": "Task completion status (always false for new tasks)"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "ISO 8601 timestamp of task creation"
+              }
+            },
+            "required": ["id", "title", "description", "completed", "created_at"]
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable success message"
+          }
+        },
+        "required": ["success", "task", "message"]
+      },
+      "examples": [
+        {
+          "input": {
+            "title": "Buy milk"
+          },
+          "output": {
+            "success": true,
+            "task": {
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "title": "Buy milk",
+              "description": "",
+              "completed": false,
+              "created_at": "2026-02-06T10:30:00Z"
+            },
+            "message": "Task 'Buy milk' created successfully"
+          }
+        },
+        {
+          "input": {
+            "title": "Prepare presentation",
+            "description": "Create slides for Q1 review meeting on Friday"
+          },
+          "output": {
+            "success": true,
+            "task": {
+              "id": "223e4567-e89b-12d3-a456-426614174001",
+              "title": "Prepare presentation",
+              "description": "Create slides for Q1 review meeting on Friday",
+              "completed": false,
+              "created_at": "2026-02-06T10:31:00Z"
+            },
+            "message": "Task 'Prepare presentation' created successfully"
+          }
+        }
+      ]
+    },
+    {
+      "name": "list_tasks",
+      "description": "List all tasks for the authenticated user with optional filtering. Use this when the user wants to see their tasks, check what's pending, or find specific tasks.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "completed": {
+            "type": "boolean",
+            "description": "Filter by completion status. If true, show only completed tasks. If false, show only pending tasks. If omitted, show all tasks."
+          },
+          "search": {
+            "type": "string",
+            "description": "Search query to filter tasks by title or description (case-insensitive).",
+            "maxLength": 255
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of tasks to return (default: 50, max: 100).",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 50
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the request was successful"
+          },
+          "tasks": {
+            "type": "array",
+            "description": "Array of tasks matching the filters",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "completed": {
+                  "type": "boolean"
+                },
+                "created_at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updated_at": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": ["id", "title", "description", "completed", "created_at", "updated_at"]
+            }
+          },
+          "count": {
+            "type": "integer",
+            "description": "Number of tasks returned"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable summary message"
+          }
+        },
+        "required": ["success", "tasks", "count", "message"]
+      },
+      "examples": [
+        {
+          "input": {},
+          "output": {
+            "success": true,
+            "tasks": [
+              {
+                "id": "123e4567-e89b-12d3-a456-426614174000",
+                "title": "Buy milk",
+                "description": "",
+                "completed": false,
+                "created_at": "2026-02-06T10:30:00Z",
+                "updated_at": "2026-02-06T10:30:00Z"
+              }
+            ],
+            "count": 1,
+            "message": "Found 1 task"
+          }
+        },
+        {
+          "input": {
+            "completed": false
+          },
+          "output": {
+            "success": true,
+            "tasks": [
+              {
+                "id": "123e4567-e89b-12d3-a456-426614174000",
+                "title": "Buy milk",
+                "description": "",
+                "completed": false,
+                "created_at": "2026-02-06T10:30:00Z",
+                "updated_at": "2026-02-06T10:30:00Z"
+              }
+            ],
+            "count": 1,
+            "message": "Found 1 pending task"
+          }
+        }
+      ]
+    },
+    {
+      "name": "get_task",
+      "description": "Get details of a specific task by ID. Use this when you need to retrieve full information about a particular task.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the task to retrieve"
+          }
+        },
+        "required": ["task_id"],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the task was found"
+          },
+          "task": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "completed": {
+                "type": "boolean"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": ["id", "title", "description", "completed", "created_at", "updated_at"]
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable message"
+          }
+        },
+        "required": ["success", "message"]
+      },
+      "examples": [
+        {
+          "input": {
+            "task_id": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "output": {
+            "success": true,
+            "task": {
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "title": "Buy milk",
+              "description": "",
+              "completed": false,
+              "created_at": "2026-02-06T10:30:00Z",
+              "updated_at": "2026-02-06T10:30:00Z"
+            },
+            "message": "Task found"
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_task",
+      "description": "Update an existing task's title, description, or completion status. Use this when the user wants to modify, complete, or mark a task as done.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the task to update"
+          },
+          "title": {
+            "type": "string",
+            "description": "New task title (optional)",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "description": {
+            "type": "string",
+            "description": "New task description (optional)",
+            "maxLength": 2000
+          },
+          "completed": {
+            "type": "boolean",
+            "description": "New completion status (optional). Set to true to mark as complete, false to mark as incomplete."
+          }
+        },
+        "required": ["task_id"],
+        "additionalProperties": false,
+        "minProperties": 2
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the task was updated successfully"
+          },
+          "task": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "completed": {
+                "type": "boolean"
+              },
+              "created_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updated_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": ["id", "title", "description", "completed", "created_at", "updated_at"]
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable success message"
+          }
+        },
+        "required": ["success", "task", "message"]
+      },
+      "examples": [
+        {
+          "input": {
+            "task_id": "123e4567-e89b-12d3-a456-426614174000",
+            "completed": true
+          },
+          "output": {
+            "success": true,
+            "task": {
+              "id": "123e4567-e89b-12d3-a456-426614174000",
+              "title": "Buy milk",
+              "description": "",
+              "completed": true,
+              "created_at": "2026-02-06T10:30:00Z",
+              "updated_at": "2026-02-06T11:00:00Z"
+            },
+            "message": "Task 'Buy milk' marked as complete"
+          }
+        },
+        {
+          "input": {
+            "task_id": "223e4567-e89b-12d3-a456-426614174001",
+            "title": "Prepare Q1 presentation",
+            "description": "Create slides for Q1 review meeting on Friday at 2pm"
+          },
+          "output": {
+            "success": true,
+            "task": {
+              "id": "223e4567-e89b-12d3-a456-426614174001",
+              "title": "Prepare Q1 presentation",
+              "description": "Create slides for Q1 review meeting on Friday at 2pm",
+              "completed": false,
+              "created_at": "2026-02-06T10:31:00Z",
+              "updated_at": "2026-02-06T11:05:00Z"
+            },
+            "message": "Task 'Prepare Q1 presentation' updated successfully"
+          }
+        }
+      ]
+    },
+    {
+      "name": "delete_task",
+      "description": "Permanently delete a task. Use this when the user wants to remove or delete a task. This action cannot be undone.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "task_id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The unique identifier of the task to delete"
+          }
+        },
+        "required": ["task_id"],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the task was deleted successfully"
+          },
+          "message": {
+            "type": "string",
+            "description": "Human-readable confirmation message"
+          }
+        },
+        "required": ["success", "message"]
+      },
+      "examples": [
+        {
+          "input": {
+            "task_id": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "output": {
+            "success": true,
+            "message": "Task deleted successfully"
+          }
+        }
+      ]
+    }
+  ],
+  "errorResponses": {
+    "authentication_error": {
+      "success": false,
+      "error": "Authentication required",
+      "code": "AUTH_REQUIRED",
+      "message": "User must be authenticated to perform this action"
+    },
+    "not_found": {
+      "success": false,
+      "error": "Task not found",
+      "code": "TASK_NOT_FOUND",
+      "message": "The requested task does not exist or you don't have permission to access it"
+    },
+    "validation_error": {
+      "success": false,
+      "error": "Validation failed",
+      "code": "VALIDATION_ERROR",
+      "message": "Invalid input parameters",
+      "details": {
+        "field": "title",
+        "issue": "Title is required and cannot be empty"
+      }
+    },
+    "server_error": {
+      "success": false,
+      "error": "Internal server error",
+      "code": "SERVER_ERROR",
+      "message": "An unexpected error occurred. Please try again later."
+    },
+    "rate_limit_error": {
+      "success": false,
+      "error": "Rate limit exceeded",
+      "code": "RATE_LIMIT",
+      "message": "Too many requests. Please try again in a few moments."
+    }
+  },
+  "notes": {
+    "authentication": "All MCP tools require a valid JWT token from Phase 2 authentication. The MCP server will validate the token and extract the user_id before executing any tool.",
+    "user_isolation": "All tools automatically filter results by the authenticated user's ID. Users can only access their own tasks.",
+    "idempotency": "update_task and delete_task operations are idempotent. Calling them multiple times with the same parameters will produce the same result.",
+    "error_handling": "All tools return structured error responses with success: false, error code, and human-readable message. The AI agent should handle these gracefully and communicate errors to the user in natural language.",
+    "performance": "list_tasks has a default limit of 50 tasks and maximum of 100 to prevent performance issues. For users with many tasks, implement pagination in future versions."
+  }
+}
