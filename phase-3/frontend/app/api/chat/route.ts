@@ -93,7 +93,7 @@ Be friendly, concise, and helpful. When users ask to create tasks, extract the t
           tool_calls: assistantMessage.tool_calls,
         },
         conversationId: `conv_${Date.now()}`,
-        toolsExecuted: assistantMessage.tool_calls.map((tc) => tc.function.name),
+        toolsExecuted: assistantMessage.tool_calls.map((tc) => (tc as any).function.name),
       });
     }
 
