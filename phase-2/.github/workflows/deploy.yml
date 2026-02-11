@@ -27,6 +27,9 @@ jobs:
         cp pyproject.toml hf/
         cp uv.lock hf/
         cp Dockerfile hf/
+        cp alembic.ini hf/
+        cp -r src/ hf/src/
+        cp -r alembic/ hf/alembic/
 
         cd hf
         git add .

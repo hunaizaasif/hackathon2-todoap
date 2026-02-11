@@ -1,4 +1,4 @@
-FROM python:3.12-alpine
+FROM python:3.13-slim
 
 WORKDIR /app
 
@@ -9,7 +9,10 @@ COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
 COPY main.py .
+COPY src/ ./src/
+COPY alembic/ ./alembic/
+COPY alembic.ini .
 
-#EXPOSE 7860  # ← Change to 7860 (Hugging Face needs this)
+EXPOSE 7860
 
 CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
