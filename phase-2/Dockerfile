@@ -15,4 +15,5 @@ COPY alembic.ini .
 
 EXPOSE 7860
 
-CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "7860"]
+# Run migrations and start server
+CMD ["sh", "-c", "uv run alembic upgrade head && uv run uvicorn main:app --host 0.0.0.0 --port 7860"]

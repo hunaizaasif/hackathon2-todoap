@@ -1,0 +1,102 @@
+name: Deploy MCP Server to Hugging Face
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'phase-3/mcp-server/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Prepare deployment files
+        working-directory: phase-3/mcp-server
+        run: |
+          # Copy HF README
+          cp README_HF.md README.md
+
+          # Verify required files exist
+          echo "Checking required files..."
+          for file in Dockerfile package.json tsconfig.json; do
+            if [ ! -f "$file" ]; then
+              echo "Error: $file not found"
+              exit 1
+            fi
+          done
+
+          # Verify src directory exists
+          if [ ! -d "src" ]; then
+            echo "Error: src directory not found"
+            exit 1
+          fi
+
+          echo "All required files present ✓"
+
+      - name: Push to Hugging Face Spaces
+        working-directory: phase-3/mcp-server
+        env:
+          HF_USERNAME: ${{ secrets.HF_USERNAME }}
+          HF_MCP_SPACE_NAME: ${{ secrets.HF_MCP_SPACE_NAME }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          # Configure git
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+          # Setup HF repository URL with token
+          HF_REPO="https://${HF_USERNAME}:${HF_TOKEN}@huggingface.co/spaces/${HF_USERNAME}/${HF_MCP_SPACE_NAME}"
+
+          # Initialize a fresh git repo for deployment
+          rm -rf .git
+          git init
+          git checkout -b main
+
+          # Add files for deployment
+          git add README.md Dockerfile package.json package-lock.json tsconfig.json
+          git add src/ .env.example
+
+          # Commit
+          git commit -m "Deploy MCP Server from GitHub Actions - $(date +'%Y-%m-%d %H:%M:%S')"
+
+          # Push to HF
+          git push --force ${HF_REPO} main
+
+          echo "✓ Successfully deployed MCP Server to Hugging Face Spaces"
+          echo "Visit: https://huggingface.co/spaces/${HF_USERNAME}/${HF_MCP_SPACE_NAME}"
+
+      - name: Deployment Summary
+        if: success()
+        run: |
+          echo "## 🚀 MCP Server Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Your MCP Server has been deployed to Hugging Face Spaces." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Space URL:** https://huggingface.co/spaces/${{ secrets.HF_USERNAME }}/${{ secrets.HF_MCP_SPACE_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**API Endpoints:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Health: https://${{ secrets.HF_USERNAME }}-${{ secrets.HF_MCP_SPACE_NAME }}.hf.space/health" >> $GITHUB_STEP_SUMMARY
+          echo "- Tools: https://${{ secrets.HF_USERNAME }}-${{ secrets.HF_MCP_SPACE_NAME }}.hf.space/tools" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⏱️ Build time: 2-5 minutes" >> $GITHUB_STEP_SUMMARY
+
+      - name: Deployment Failed
+        if: failure()
+        run: |
+          echo "## ❌ MCP Server Deployment Failed" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Please check the logs above for error details." >> $GITHUB_STEP_SUMMARY

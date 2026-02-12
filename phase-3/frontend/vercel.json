@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "regions": ["iad1"],
+  "env": {
+    "NEXT_PUBLIC_PHASE2_API_URL": {
+      "description": "Phase 2 API URL (Hugging Face Space)",
+      "value": "https://YOUR_USERNAME-phase-2-todo-api.hf.space"
+    },
+    "MCP_SERVER_URL": {
+      "description": "MCP Server URL (Hugging Face Space)",
+      "value": "https://YOUR_USERNAME-phase-3-mcp-server.hf.space"
+    },
+    "OPENAI_API_KEY": {
+      "description": "OpenAI API Key for AI agent"
+    },
+    "OPENAI_BASE_URL": {
+      "description": "OpenAI Base URL (optional, for OpenRouter)",
+      "value": "https://openrouter.ai/api/v1"
+    }
+  }
+}
