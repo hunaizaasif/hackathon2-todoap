@@ -9,7 +9,7 @@
   "env": {
     "NEXT_PUBLIC_PHASE2_API_URL": {
       "description": "Phase 2 API URL (Hugging Face Space)",
-      "value": "https://YOUR_USERNAME-phase-2-todo-api.hf.space"
+      "value": "https://amber-asif-todo-app-phase-2.hf.space"
     },
     "MCP_SERVER_URL": {
       "description": "MCP Server URL (Hugging Face Space)",
