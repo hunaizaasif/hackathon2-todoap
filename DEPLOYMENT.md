@@ -147,7 +147,7 @@ curl https://YOUR_USERNAME-phase-3-mcp-server.hf.space/health
 ```
 Vercel Project → Settings → Environment Variables:
 
-NEXT_PUBLIC_PHASE2_API_URL = https://YOUR_USERNAME-phase-2-todo-api.hf.space
+NEXT_PUBLIC_PHASE2_API_URL =  https://vercel.com/dashboard
 MCP_SERVER_URL = https://YOUR_USERNAME-phase-3-mcp-server.hf.space
 OPENAI_API_KEY = sk-proj-xxxxx
 OPENAI_BASE_URL = https://openrouter.ai/api/v1

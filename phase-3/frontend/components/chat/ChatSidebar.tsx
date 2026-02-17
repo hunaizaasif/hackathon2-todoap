@@ -74,23 +74,40 @@ export function ChatSidebar({ isOpen, onClose, onTaskCreated }: ChatSidebarProps
   if (!isOpen) return null;
 
   return (
-    <div className="fixed right-0 top-0 h-full w-full md:w-96 bg-background border-l shadow-lg z-50 flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b">
-        <h2 className="text-lg font-semibold">AI Assistant</h2>
-        <button
-          onClick={onClose}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          ✕
-        </button>
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 animate-scale-in"
+        onClick={onClose}
+      />
+
+      {/* Sidebar */}
+      <div className="fixed right-0 top-0 h-full w-full md:w-[450px] glass-effect border-l border-white/20 shadow-2xl z-50 flex flex-col animate-slide-in-up">
+        {/* Header with gradient */}
+        <div className="flex items-center justify-between p-5 border-b border-white/20 bg-gradient-to-r from-purple-600/20 to-pink-600/20">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center text-white text-xl shadow-lg">
+              🤖
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-800 dark:text-white">AI Assistant</h2>
+              <p className="text-xs text-gray-600 dark:text-gray-300">Powered by OpenRouter</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-10 h-10 rounded-full glass-effect hover:bg-red-500/20 transition-all duration-200 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-red-500 hover:scale-110 transform"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Chat History */}
+        <ChatHistory messages={messages} isLoading={isLoading} />
+
+        {/* Chat Input */}
+        <ChatInput onSend={handleSendMessage} disabled={isLoading} />
       </div>
-
-      {/* Chat History */}
-      <ChatHistory messages={messages} isLoading={isLoading} />
-
-      {/* Chat Input */}
-      <ChatInput onSend={handleSendMessage} disabled={isLoading} />
-    </div>
+    </>
   );
 }

@@ -42,59 +42,59 @@ export function TaskForm({ onSubmit, onCancel }: TaskFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label htmlFor="title" className="block text-sm font-medium mb-2">
-          Task Title *
+        <label htmlFor="title" className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-200">
+          ✨ Task Title *
         </label>
         <input
           id="title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Enter task title"
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+          placeholder="What needs to be done?"
+          className="w-full px-4 py-3 glass-effect rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200 text-gray-800 dark:text-white placeholder-gray-400"
           disabled={isSubmitting}
           maxLength={255}
         />
       </div>
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium mb-2">
-          Description (optional)
+        <label htmlFor="description" className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-200">
+          📝 Description (optional)
         </label>
         <textarea
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Enter task description"
-          rows={3}
-          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+          placeholder="Add more details about this task..."
+          rows={4}
+          className="w-full px-4 py-3 glass-effect rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none transition-all duration-200 text-gray-800 dark:text-white placeholder-gray-400"
           disabled={isSubmitting}
           maxLength={2000}
         />
       </div>
 
       {error && (
-        <div className="text-sm text-destructive bg-destructive/10 px-3 py-2 rounded-md">
-          {error}
+        <div className="text-sm text-red-600 dark:text-red-400 glass-effect px-4 py-3 rounded-xl border-l-4 border-red-500 animate-scale-in">
+          ⚠️ {error}
         </div>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex gap-3 pt-2">
         <button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 font-medium"
+          className="flex-1 px-5 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:scale-105 transform transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg"
         >
-          {isSubmitting ? "Creating..." : "Create Task"}
+          {isSubmitting ? "⏳ Creating..." : "✨ Create Task"}
         </button>
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
             disabled={isSubmitting}
-            className="px-4 py-2 border rounded-md hover:bg-accent disabled:opacity-50"
+            className="px-5 py-3 glass-effect rounded-xl hover:scale-105 transform transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-gray-700 dark:text-gray-200"
           >
             Cancel
           </button>

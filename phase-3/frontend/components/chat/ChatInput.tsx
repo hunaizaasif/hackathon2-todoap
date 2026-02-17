@@ -25,14 +25,14 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   };
 
   return (
-    <div className="border-t p-4 bg-background">
-      <div className="flex gap-2">
+    <div className="border-t border-white/20 p-5 bg-gradient-to-r from-purple-600/10 to-pink-600/10">
+      <div className="flex gap-3">
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Type a message... (e.g., 'Add buy milk to my list')"
-          className="flex-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+          placeholder="Type your message... (Press Enter to send)"
+          className="flex-1 px-4 py-3 glass-effect rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none transition-all duration-200 text-gray-800 dark:text-white placeholder-gray-400"
           rows={2}
           disabled={disabled}
           maxLength={1000}
@@ -40,11 +40,14 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
         <button
           onClick={handleSend}
           disabled={disabled || !message.trim()}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 font-medium self-end"
+          className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:scale-105 transform transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg self-end"
         >
-          Send
+          {disabled ? "⏳" : "🚀"}
         </button>
       </div>
+      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+        💡 Tip: Press Shift+Enter for new line
+      </p>
     </div>
   );
 }

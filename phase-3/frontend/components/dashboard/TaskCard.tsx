@@ -47,76 +47,78 @@ export function TaskCard({ task, onUpdate, onDelete }: TaskCardProps) {
   const getStatusBadge = () => {
     switch (task.status) {
       case "complete":
-        return "bg-green-100 text-green-800";
+        return "bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-lg";
       case "in_progress":
-        return "bg-blue-100 text-blue-800";
+        return "bg-gradient-to-r from-blue-400 to-cyan-500 text-white shadow-lg";
       default:
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg";
     }
   };
 
   const getStatusLabel = () => {
     switch (task.status) {
       case "complete":
-        return "Completed";
+        return "✓ Completed";
       case "in_progress":
-        return "In Progress";
+        return "⚡ In Progress";
       default:
-        return "Pending";
+        return "⏳ Pending";
     }
   };
 
   const getNextStatusLabel = () => {
     switch (task.status) {
       case "pending":
-        return "Start";
+        return "▶ Start";
       case "in_progress":
-        return "Complete";
+        return "✓ Complete";
       default:
-        return "Reset";
+        return "↻ Reset";
     }
   };
 
   return (
-    <div className="border rounded-lg p-4 bg-card hover:shadow-md transition-shadow">
+    <div className="card-3d glass-effect rounded-2xl p-5 shadow-xl hover:shadow-2xl transition-all duration-300 animate-scale-in border border-white/20">
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
           <h3
-            className={`font-medium text-lg ${
-              task.status === "complete" ? "line-through text-muted-foreground" : ""
+            className={`font-semibold text-lg mb-2 ${
+              task.status === "complete"
+                ? "line-through text-gray-500 dark:text-gray-400"
+                : "text-gray-800 dark:text-white"
             }`}
           >
             {task.title}
           </h3>
           {task.description && (
-            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2 leading-relaxed">
               {task.description}
             </p>
           )}
-          <div className="flex items-center gap-2 mt-3">
-            <span className={`text-xs px-2 py-1 rounded-full ${getStatusBadge()}`}>
+          <div className="flex items-center gap-2 mt-4">
+            <span className={`text-xs px-3 py-1.5 rounded-full font-medium ${getStatusBadge()}`}>
               {getStatusLabel()}
             </span>
-            <span className="text-xs text-muted-foreground">
-              {new Date(task.created_at).toLocaleDateString()}
+            <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+              📅 {new Date(task.created_at).toLocaleDateString()}
             </span>
           </div>
         </div>
       </div>
-      <div className="flex gap-2 mt-4">
+      <div className="flex gap-2 mt-5">
         <button
           onClick={handleToggleStatus}
           disabled={isUpdating || isDeleting}
-          className="flex-1 px-3 py-2 text-sm font-medium rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          className="flex-1 px-4 py-2.5 text-sm font-medium rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:scale-105 transform transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
         >
-          {isUpdating ? "..." : getNextStatusLabel()}
+          {isUpdating ? "⏳ Updating..." : getNextStatusLabel()}
         </button>
         <button
           onClick={handleDelete}
           disabled={isDeleting || isUpdating}
-          className="px-3 py-2 text-sm font-medium rounded-md bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50"
+          className="px-4 py-2.5 text-sm font-medium rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white hover:scale-105 transform transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
         >
-          {isDeleting ? "..." : "Delete"}
+          {isDeleting ? "⏳" : "🗑️"}
         </button>
       </div>
     </div>
