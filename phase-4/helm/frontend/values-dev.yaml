@@ -1,0 +1,21 @@
+# Development Environment Values
+replicaCount: 1
+
+image:
+  repository: phase3-frontend
+  pullPolicy: Never
+  tag: "latest"
+
+env:
+  - name: NEXT_PUBLIC_API_URL
+    value: "http://backend:7860"
+  - name: NODE_ENV
+    value: "development"
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi

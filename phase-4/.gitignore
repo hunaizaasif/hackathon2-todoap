@@ -1,0 +1,26 @@
+# Phase 4 .gitignore
+
+# Secrets - NEVER commit these
+k8s/secrets.yaml
+*.secret.yaml
+*-secrets.yaml
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Helm generated files
+*.tgz
+charts/
+
+# Kubernetes temporary files
+*.tmp
+*.swp
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db

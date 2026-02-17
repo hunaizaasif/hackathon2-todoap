@@ -1,0 +1,39 @@
+# Production Environment Values
+replicaCount: 3  # Multiple replicas for HA
+
+image:
+  repository: phase2-backend
+  pullPolicy: IfNotPresent
+  tag: "v1.0.0"  # Use specific version in prod
+
+env:
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: backend-secrets
+        key: database-url
+  - name: AUTH_SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: backend-secrets
+        key: auth-secret-key
+  - name: APP_NAME
+    value: "Phase 2 Todo API"
+  - name: DEBUG
+    value: "false"
+  - name: CORS_ORIGINS
+    value: '["https://yourdomain.com"]'
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 3
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70

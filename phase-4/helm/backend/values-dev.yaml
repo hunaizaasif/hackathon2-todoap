@@ -1,0 +1,33 @@
+# Development Environment Values
+replicaCount: 1  # Single replica for dev
+
+image:
+  repository: phase2-backend
+  pullPolicy: Never
+  tag: "latest"
+
+env:
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: backend-secrets
+        key: database-url
+  - name: AUTH_SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: backend-secrets
+        key: auth-secret-key
+  - name: APP_NAME
+    value: "Phase 2 Todo API (Dev)"
+  - name: DEBUG
+    value: "true"  # Enable debug in dev
+  - name: CORS_ORIGINS
+    value: '["*"]'
+
+resources:
+  limits:
+    cpu: 250m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi

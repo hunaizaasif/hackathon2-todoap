@@ -1,0 +1,39 @@
+╔══════════════════════════════════════════════════════════════╗
+║     🔐 DATABASE_URL UPDATE KARO (30 SECONDS)                ║
+╚══════════════════════════════════════════════════════════════╝
+
+STEP 1: Settings Page Kholo
+   → https://huggingface.co/spaces/Amber-Asif/todo-app-phase-2/settings
+
+STEP 2: Variables Section Mein Jao
+   → "Variables and secrets" section dhundo
+
+STEP 3: DATABASE_URL Edit Karo
+   → DATABASE_URL ke saamne "Edit" button click karo
+   → Ya agar nahi hai toh "New secret" click karo
+
+STEP 4: Yeh Value Paste Karo
+   
+   postgresql://neondb_owner:npg_gvoCf18zyndj@ep-withered-water-a71ign5x-pooler.ap-southeast-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+
+STEP 5: Save Karo
+   → "Save" ya "Update" button click karo
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ Already Set (No Action Needed):
+   AUTH_SECRET_KEY = 18d4R14KL0ZO8uNvnw29IoJvn9iLtrkbzrCwEdGMCSg
+   DEBUG = false
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⏳ DATABASE_URL update karne ke baad:
+   - Space automatically rebuild hoga (2-3 minutes)
+   - Logs tab mein progress dekho
+   - Success message: "Application startup complete"
+
+🌐 Test karo:
+   https://amber-asif-todo-app-phase-2.hf.space/health
+   https://amber-asif-todo-app-phase-2.hf.space/docs
+
+🎉 DONE!

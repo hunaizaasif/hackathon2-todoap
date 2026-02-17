@@ -1,0 +1,85 @@
+# Backend Helm Chart Values
+replicaCount: 2
+
+image:
+  repository: phase2-backend
+  pullPolicy: Never  # Use local images from Minikube
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: "backend"
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels:
+  app: backend
+
+podSecurityContext: {}
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 7860
+  targetPort: 7860
+
+ingress:
+  enabled: false
+
+# Environment variables
+env:
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: backend-secrets
+        key: database-url
+  - name: AUTH_SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: backend-secrets
+        key: auth-secret-key
+  - name: APP_NAME
+    value: "Phase 2 Todo API"
+  - name: DEBUG
+    value: "false"
+  - name: CORS_ORIGINS
+    value: '["*"]'
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+livenessProbe:
+  httpGet:
+    path: /health
+    port: 7860
+  initialDelaySeconds: 30
+  periodSeconds: 10
+
+readinessProbe:
+  httpGet:
+    path: /health
+    port: 7860
+  initialDelaySeconds: 10
+  periodSeconds: 5
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+volumes: []
+volumeMounts: []
+nodeSelector: {}
+tolerations: []
+affinity: {}

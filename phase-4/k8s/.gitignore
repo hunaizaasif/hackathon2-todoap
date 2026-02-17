@@ -1,0 +1,6 @@
+# Ignore actual secrets file (keep only the example)
+secrets.yaml
+
+# Ignore any generated files
+*.log
+*.tmp
