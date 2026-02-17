@@ -72,6 +72,7 @@ auto-deploy.sh
 set-env-vars.sh
 hf-deployment-ready/
 temp-hf-deploy/
+hf-space-clone/
 
 # Claude settings (may contain API keys)
 .claude/settings.local.json
